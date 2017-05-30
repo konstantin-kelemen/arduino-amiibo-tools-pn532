@@ -1,25 +1,3 @@
-/**************************************************************************/
-/*! 
-    @file     ntag2xx_erase.pde
-    @author   KTOWN (Adafruit Industries)
-    @license  BSD (see license.txt)
-
-    This example will wait for any NTAG203 or NTAG213 card or tag,
-    and will attempt to erase the user data section of the card (setting
-    all user bytes to 0x00)
-
-    This is an example sketch for the Adafruit PN532 NFC/RFID breakout boards
-    This library works with the Adafruit NFC breakout 
-      ----> https://www.adafruit.com/products/364
- 
-    Check out the links above for our tutorials and wiring diagrams 
-    These chips use SPI or I2C to communicate.
-
-    Adafruit invests time and resources providing this open source code, 
-    please support Adafruit and open-source hardware by purchasing 
-    products from Adafruit!
-*/
-/**************************************************************************/
 #include <Wire.h>
 #include <SPI.h>
 #include <Adafruit_PN532.h>
@@ -58,19 +36,19 @@ void setup(void) {
 
   uint32_t versiondata = nfc.getFirmwareVersion();
   if (! versiondata) {
-    Serial.print("Didn't find PN53x board");
+    Serial.print(F("Didn't find PN53x board"));
     while (1); // halt
   }
   // Got ok data, print it out!
-  Serial.print("Found chip PN5"); Serial.println((versiondata>>24) & 0xFF, HEX); 
-  Serial.print("Firmware ver. "); Serial.print((versiondata>>16) & 0xFF, DEC); 
-  Serial.print('.'); Serial.println((versiondata>>8) & 0xFF, DEC);
+  Serial.print(F("Found chip PN5")); Serial.println((versiondata>>24) & 0xFF, HEX); 
+  Serial.print(F("Firmware ver. ")); Serial.print((versiondata>>16) & 0xFF, DEC); 
+  Serial.print(F(".")); Serial.println((versiondata>>8) & 0xFF, DEC);
   
   // configure board to read RFID tags
   nfc.SAMConfig();
   
   Serial.println();
-  Serial.println("Arduino amiibo writer. Put your NFC-tag to the reader");
+  Serial.println(F("Arduino amiibo writer. Put your NFC-tag to the reader"));
 }
 
 void loop(void) {
@@ -106,7 +84,7 @@ void loop(void) {
 
   if (success) {
     Serial.println();
-    Serial.println("Tag found, writing...");
+    Serial.println(F("Tag found, writing..."));
     Serial.println();
 
     if (uidLength == 7)
@@ -128,19 +106,9 @@ void loop(void) {
         }
         else
         {
-          Serial.println("Write process failed, please try once more.");
-          Serial.println("Your tag is still fine, just remove it and put back again in 3 seconds.");
-          delay(1000);
-          Serial.println();
-          Serial.print("New attempt in 3...");
-          delay(1000);
-          Serial.print("2...");
-          delay(1000);
-          Serial.print("1...");
-          delay(1000);
-          Serial.println();
-          Serial.println();
-          Serial.println("Ready to write.");
+          Serial.println(F("Write process failed, please try once more."));
+          Serial.println(F("Your tag is still fine, just remove it and put back again in 3 seconds."));
+          countdown();
           return;
         }
         Serial.println();
@@ -151,7 +119,7 @@ void loop(void) {
       // Write the Dynamic Lock Bytes
       byte DynamicLockBytes[] = {0x01, 0x00, 0x0F, 0xBD};
 
-      Serial.println("Writing dynamic lock bytes");
+      Serial.println(F("Writing dynamic lock bytes"));
       success = nfc.ntag2xx_WritePage(130, DynamicLockBytes);
 
       if (success)
@@ -161,20 +129,10 @@ void loop(void) {
       }
       else
       {
-        Serial.println("Write process failed, please try once more.");
-        Serial.println("Your tag is probably still fine, just remove it and put back again in 3 seconds.");
-        Serial.println("Try a new tag if that didn't help.");
-        delay(1000);
-        Serial.println();
-        Serial.print("New attempt in 3...");
-        delay(1000);
-        Serial.print("2...");
-        delay(1000);
-        Serial.print("1...");
-        delay(1000);
-        Serial.println();
-        Serial.println();
-        Serial.println("Ready to write.");
+        Serial.println(F("Write process failed, please try once more."));
+        Serial.println(F("Your tag is probably still fine, just remove it and put back again in 3 seconds."));
+        Serial.println(F("Try a new tag if that didn't help."));
+        countdown();
         return;
       }
       Serial.println();
@@ -191,21 +149,38 @@ void loop(void) {
       }
       else
       {
-        Serial.println("Write process failed.");
-        Serial.println("The current tag is probably useless now.");
-        Serial.println("Please try to use another tag. Don't forget to update the dump.");
-        delay(30000);
+        Serial.println(F("Write process failed."));
+        Serial.println(F("The current tag is probably useless now."));
+        Serial.println(F("Please try to use another tag. Don't forget to update the dump."));
+        countdown();
         return;
       }
       Serial.println();
-      Serial.println("Write process finished! Now please take your Amiibo card away!");
-      delay(30000);
+      Serial.println(F("Write process finished! Now please take your Amiibo card away!"));
+      countdown();
+      return;
     }
     else
     {
-      Serial.println("This doesn't seem to be NTAG215 tag!");
+      Serial.println(F("This doesn't seem to be NTAG215 tag!"));
+      countdown();
+      return;
     }
   }
+}
+
+void countdown() {
+  delay(1000);
+  Serial.println();
+  Serial.print(F("New attempt in 3..."));
+  delay(1000);
+  Serial.print(F("2..."));
+  delay(1000);
+  Serial.print(F("1..."));
+  delay(1000);
+  Serial.println();
+  Serial.println();
+  Serial.println(F("Ready to write."));
 }
 
 /**

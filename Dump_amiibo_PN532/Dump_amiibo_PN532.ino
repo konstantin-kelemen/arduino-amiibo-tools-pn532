@@ -1,24 +1,3 @@
-/**************************************************************************/
-/*! 
-    @file     readntag203.pde
-    @author   KTOWN (Adafruit Industries)
-    @license  BSD (see license.txt)
-
-    This example will wait for any NTAG203 or NTAG213 card or tag,
-    and will attempt to read from it.
-
-    This is an example sketch for the Adafruit PN532 NFC/RFID breakout boards
-    This library works with the Adafruit NFC breakout 
-      ----> https://www.adafruit.com/products/364
- 
-    Check out the links above for our tutorials and wiring diagrams 
-    These chips use SPI or I2C to communicate.
-
-    Adafruit invests time and resources providing this open source code, 
-    please support Adafruit and open-source hardware by purchasing 
-    products from Adafruit!
-*/
-/**************************************************************************/
 #include <Wire.h>
 #include <SPI.h>
 #include <Adafruit_PN532.h>
@@ -57,19 +36,19 @@ void setup(void) {
 
   uint32_t versiondata = nfc.getFirmwareVersion();
   if (! versiondata) {
-    Serial.print("Didn't find PN53x board");
+    Serial.print(F("Didn't find PN53x board"));
     while (1); // halt
   }
   // Got ok data, print it out!
-  Serial.print("Found chip PN5"); Serial.println((versiondata>>24) & 0xFF, HEX); 
-  Serial.print("Firmware ver. "); Serial.print((versiondata>>16) & 0xFF, DEC); 
-  Serial.print('.'); Serial.println((versiondata>>8) & 0xFF, DEC);
+  Serial.print(F("Found chip PN5")); Serial.println((versiondata>>24) & 0xFF, HEX); 
+  Serial.print(F("Firmware ver. ")); Serial.print((versiondata>>16) & 0xFF, DEC); 
+  Serial.print(F(".")); Serial.println((versiondata>>8) & 0xFF, DEC);
   
   // configure board to read RFID tags
   nfc.SAMConfig();
   
   Serial.println();
-  Serial.println("Arduino amiibo reader. Put your NFC-tag to the reader");
+  Serial.println(F("Arduino amiibo reader. Put your NFC-tag to the reader"));
 }
 
 void loop(void) {
@@ -83,7 +62,7 @@ void loop(void) {
   
   if (success) {
     Serial.println();
-    Serial.println("Tag found, starting dump...");
+    Serial.println(F("Tag found, starting dump..."));
     Serial.println();
     
     if (uidLength == 7)
@@ -102,17 +81,17 @@ void loop(void) {
         }
         else
         {
-          Serial.println("Unable to read the requested page!");
+          Serial.println(F("Unable to read the requested page!"));
         }
       }      
     }
     else
     {
-      Serial.println("This doesn't seem to be Amiibo!");
+      Serial.println(F("This doesn't seem to be Amiibo!"));
     }
 
     Serial.println();
-    Serial.println("Dump finished! Now please remove your Amiibo from the reader.");
+    Serial.println(F("Dump finished! Now please remove your Amiibo from the reader."));
     delay(30000);
   }
 }
