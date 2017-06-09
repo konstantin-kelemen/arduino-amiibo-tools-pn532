@@ -1,3 +1,9 @@
+/*
+ * This sketch is writing to page 3 which is impossible to achieve with defauld
+ * Adafruit library. Please use my fork instead:
+ * https://github.com/konstantin-kelemen/Adafruit-PN532
+ */
+
 #include <Wire.h>
 #include <SPI.h>
 #include <Adafruit_PN532.h>

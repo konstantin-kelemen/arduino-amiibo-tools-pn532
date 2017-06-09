@@ -92,8 +92,23 @@ void loop(void) {
 
     Serial.println();
     Serial.println(F("Dump finished! Now please remove your Amiibo from the reader."));
-    delay(30000);
+    countdown();
+    return;
   }
+}
+
+void countdown() {
+  delay(1000);
+  Serial.println();
+  Serial.print(F("New attempt in 3..."));
+  delay(1000);
+  Serial.print(F("2..."));
+  delay(1000);
+  Serial.print(F("1..."));
+  delay(1000);
+  Serial.println();
+  Serial.println();
+  Serial.println(F("Ready to read."));
 }
 
 /**
