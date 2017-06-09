@@ -14,7 +14,7 @@ This repo consists of two main sketches:
 
 - NFC shield. [This one](http://s.click.aliexpress.com/e/r3Vj2nm) will do the job.
 
-- [Arduino library for the NFC shield](https://github.com/adafruit/Adafruit-PN532)
+- [Modified Adafruid library for the NFC shield](https://github.com/konstantin-kelemen/Adafruit-PN532)
 
 ## Usage
 
