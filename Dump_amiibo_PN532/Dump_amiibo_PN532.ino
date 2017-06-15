@@ -62,12 +62,16 @@ void loop(void) {
   
   if (success) {
     Serial.println();
-    Serial.println(F("Tag found, starting dump..."));
+    Serial.print(F("Tag UID: "));
+    PrintHexShort(uid, uidLength);
     Serial.println();
     
     if (uidLength == 7)
-    {
+    {     
       uint8_t data[32];
+
+      Serial.println(F("Starting dump..."));
+      Serial.println();
 
       for (uint8_t i = 0; i < 135; i++) 
       {

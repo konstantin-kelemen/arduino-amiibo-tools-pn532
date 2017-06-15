@@ -1,5 +1,5 @@
 /*
- * This sketch is writing to page 3 which is impossible to achieve with defauld
+ * This sketch is writing to page 3 which is impossible to achieve with default
  * Adafruit library. Please use my fork instead:
  * https://github.com/konstantin-kelemen/Adafruit-PN532
  */
@@ -66,7 +66,9 @@ void loop(void) {
   byte pages = 135;
   byte dataBlock[] = {
 
-/*  Paste your dump here
+
+
+/*  ^^^ Paste your dump before this line ^^^
  *
  *  This is an example of how the pasted dump should look like:
  *  
@@ -89,29 +91,43 @@ void loop(void) {
   success = nfc.readPassiveTargetID(PN532_MIFARE_ISO14443A, uid, &uidLength);
 
   if (success) {
-    Serial.println();
-    Serial.println(F("Tag found, writing..."));
-    Serial.println();
 
-    if (uidLength == 7)
-    {
+    if (uidLength == 7) {
+
+      // Compare tag UID to the dump UID
+      for (byte uidbyte = 0; uidbyte < 7; uidbyte++) {
+        byte actualbyte = uidbyte;
+        if (actualbyte > 2) {
+          actualbyte++;
+        }
+
+        if (dataBlock[actualbyte] != uid[uidbyte]) {
+          Serial.println(F("UID mismatch!"));
+          Serial.println(F("UID of the tag doesn't match the UID specified in the dump."));
+          countdown();
+          return;
+        }
+      }
+
+      Serial.println();
+      Serial.println(F("Tag found, writing..."));
+      Serial.println();
+
       // Write main data
       for (byte page = 3; page < pages; page++) {
         // Write data to the page
         Serial.print(F("Writing data into page ")); Serial.print(page);
-        Serial.println(F(" ..."));
-        for (byte byte = 0; byte < 4; byte++) {
-          pagebytes[byte] = dataBlock[(page * 4) + byte];
+        Serial.print(F(" ... "));
+        for (byte pagebyte = 0; pagebyte < 4; pagebyte++) {
+          pagebytes[pagebyte] = dataBlock[(page * 4) + pagebyte];
         }
-        success = nfc.ntag2xx_WritePage(page, pagebytes);
         
-        if (success)
-        {
-          // Dump the page data
-          PrintHexShort(pagebytes, 4);
-        }
-        else
-        {
+        success = nfc.ntag2xx_WritePage(page, pagebytes);
+
+        if (success) {
+          Serial.println(F("OK"));
+        } else {
+          Serial.println(F("Fail"));
           Serial.println(F("Write process failed, please try once more."));
           Serial.println(F("Your tag is still fine, just remove it and put back again in 3 seconds."));
           countdown();
@@ -122,19 +138,16 @@ void loop(void) {
       
       // Write lock bytes - the last thing you should do.
       // If you write them too early - your tag is wasted.
-      // Write the Dynamic Lock Bytes
+      Serial.println(F("Writing lock bytes"));
+
       byte DynamicLockBytes[] = {0x01, 0x00, 0x0F, 0xBD};
 
-      Serial.println(F("Writing dynamic lock bytes"));
+      // Write Dynamic lock bytes
       success = nfc.ntag2xx_WritePage(130, DynamicLockBytes);
 
-      if (success)
-      {
-        // Dump the page data
-        PrintHexShort(DynamicLockBytes, 4);
-      }
-      else
-      {
+      if (success) {
+        Serial.println(F("Dynamic lock bytes OK"));
+      } else {
         Serial.println(F("Write process failed, please try once more."));
         Serial.println(F("Your tag is probably still fine, just remove it and put back again in 3 seconds."));
         Serial.println(F("Try a new tag if that didn't help."));
@@ -143,18 +156,14 @@ void loop(void) {
       }
       Serial.println();
       
-      // Now we can write Static Lock Bytes - first 4 bytes
       byte StaticLockBytes[] =  {0x00, 0x00, 0x0F, 0xE0};
-      
+
+      // Now we write Static lock bytes
       success = nfc.ntag2xx_WritePage(2, StaticLockBytes);
 
-      if (success)
-      {
-        // Dump the page data
-        PrintHexShort(StaticLockBytes, 4);
-      }
-      else
-      {
+      if (success) {
+        Serial.println(F("Static lock bytes OK"));
+      } else {
         Serial.println(F("Write process failed."));
         Serial.println(F("The current tag is probably useless now."));
         Serial.println(F("Please try to use another tag. Don't forget to update the dump."));
@@ -165,9 +174,7 @@ void loop(void) {
       Serial.println(F("Write process finished! Now please take your Amiibo card away!"));
       countdown();
       return;
-    }
-    else
-    {
+    } else {
       Serial.println(F("This doesn't seem to be NTAG215 tag!"));
       countdown();
       return;
@@ -192,11 +199,9 @@ void countdown() {
 /**
    Helper routine to dump a byte array as hex values to Serial.
 */
-void PrintHexShort(const byte * data, const uint32_t numBytes)
-{
+void PrintHexShort(const byte * data, const uint32_t numBytes) {
   uint32_t szPos;
-  for (szPos=0; szPos < numBytes; szPos++) 
-  {
+  for (szPos=0; szPos < numBytes; szPos++) {
     // Append leading 0 for small values
     if (data[szPos] <= 0xF)
       Serial.print(F("0"));
