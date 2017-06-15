@@ -5,7 +5,6 @@
 This repo consists of two main sketches:
 
 - `Dump_amiibo_PN532` - a sketch for dumping amiibos
-
 - `Write_amiibo_PN532` - a sketch for writing amiibos
 
 ## Requirements
@@ -18,4 +17,4 @@ This repo consists of two main sketches:
 
 ## Usage
 
-[This blog post](https://games.kel.mn/en/create-amiibo-clones-with-arduino/) describes the process in detail.
+[This blog post](https://games.kel.mn/en/create-amiibo-clones-with-arduino-and-pn532-nfc-module/) describes the process in detail.
